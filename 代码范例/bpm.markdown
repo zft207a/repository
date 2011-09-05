@@ -354,3 +354,68 @@ close函数请放入finally块，确保close不受write可能的异常而未执�
     }
 
 ***
+
+###范例11
+    private void getSheets() throws IOException {
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(fileRecord.getFile());
+            for (String key:sheetNameMapping.getMap().keySet()) {
+                HSSFSheet sheet = new HSSFWorkbook(fis).getSheet(sheetNameMapping.get(key));
+                sheetMap.put(key, sheet);
+            }
+        } 
+        catch (IOException e) {
+            throw e;
+        } 
+        finally {
+            if(fis != null){
+                try {
+                    fis.close();
+                }
+                catch (IOException e) {
+                    logger.error("exception:",e);
+                }
+            }
+        }
+    }
+
+####建议1
+多余catch
+    
+    private void getSheets() throws IOException {
+        FileInputStream fis = null;
+        try {
+            fis = new FileInputStream(fileRecord.getFile());
+            for (String key:sheetNameMapping.getMap().keySet()) {
+                HSSFSheet sheet = new HSSFWorkbook(fis).getSheet(sheetNameMapping.get(key));
+                sheetMap.put(key, sheet);
+            }
+        } 
+        finally {
+            if(fis != null){
+                try {
+                    fis.close();
+                }
+                catch (IOException e) {
+                    logger.error("exception:",e);
+                }
+            }
+        }
+    }
+
+####建议2
+    
+    private void getSheets() throws IOException {
+        FileInputStream fis = new FileInputStream(fileRecord.getFile());
+        try {
+            for (String key:sheetNameMapping.getMap().keySet()) {
+                HSSFSheet sheet = new HSSFWorkbook(fis).getSheet(sheetNameMapping.get(key));
+                sheetMap.put(key, sheet);
+            }
+        } 
+        finally {
+            fis.close();
+        }
+    }
+***
